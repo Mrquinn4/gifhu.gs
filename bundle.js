@@ -22,9 +22,9 @@ navigator.getMedia (
         canvas.width = video.videoWidth/2;
         canvas.height = video.videoHeight/2
         context.drawImage(video, 0,0, canvas.width, canvas.height);
+        video.play();
       }, 1000/24);
 
-      video.play();
    },
 
    // errorCallback

@@ -13,9 +13,17 @@ navigator.getMedia (
    // successCallback
    function(localMediaStream) {
       var video = document.querySelector('video');
+      var canvas = document.querySelector('#in');
+      var context = canvas.getContext('2d');
+
       video.src = window.URL.createObjectURL(localMediaStream);
-      video.onloadedmetadata = function(e) {
-      };
+
+      setInterval(function() {
+        canvas.width = video.videoWidth/2;
+        canvas.height = video.videoHeight/2
+        context.drawImage(video, 0,0, canvas.width, canvas.height);
+      }, 1000/24);
+
       video.play();
    },
 
@@ -26,45 +34,57 @@ navigator.getMedia (
 );
 
 $(function() {
+  var gif = new GIF({
+    workers: 4,
+    workerScript: '/lib/gif.worker.js',
+    width: 320,
+    height: 240
+  });
 
-  $('button').click(function() {
-    
+  $('button#reset', function() {
     var gif = new GIF({
       workers: 4,
       workerScript: '/lib/gif.worker.js',
-      width: 300,
-      height: 200
+      width: 320,
+      height: 240
     });
+  });
 
-    var video = $('video')[0];
+  var canvas = $('canvas')[0];
+  var capture = function() {
+    console.log('captured');
+    gif.addFrame(canvas, { copy: true });
+  };
 
-    var capture = function() {
-      console.log('captured');
-      gif.addFrame(video, { copy: true });
-    };
+  gif.on('start', function() {
+    console.log('starting');
+  });
 
+  gif.on('progress', function(p) {
+    console.log(p);
+  });
+
+  gif.on('finished', function(blob) {
+    img = $('img');
+    img.attr('src', URL.createObjectURL(blob));
+  });
+
+  $('button#1sec').click(function() {
     var start = function() {
-      var interval = setInterval(capture, 100);
+      var interval = setInterval(capture, 250);
       setTimeout(function() {
         clearInterval(interval);
         console.log('cleared');
+        gif.running = false;
         gif.render();
-      }, 1000);
+      }, 2500);
     };
-
-    gif.on('start', function() {
-      console.log('starting');
-    });
-
-    gif.on('progress', function(p) {
-      console.log(p);
-    });
-
-    gif.on('finished', function(blob) {
-      img = $('img');
-      img.attr('src', URL.createObjectURL(blob));
-    });
-
     start();
+  });
+
+  $('button#take').click(function() {
+    capture();
+    gif.running = false;
+    gif.render();
   });
 });

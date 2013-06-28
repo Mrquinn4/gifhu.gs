@@ -1,7 +1,12 @@
+<script src='http://cdnjs.cloudflare.com/ajax/libs/camanjs/4.0.0/caman.full.min.js'></script>
+
 <div id='app'>
   <video></video>
 
-  <button>foo</button>
+  <canvas id='in'></canvas>
+  <button id='1sec'>1 second</button>
+  <button id='take'>snap</button>
+  <button id='reset'>reset</button>
 
   <img></img>
 </div>
@@ -9,4 +14,6 @@
 <script src='lib/jquery.js'></script>
 <script src='lib/gif.js'></script>
 <script src='bundle.js'></script>
-
+<style>
+  video { display: none; }
+</style>
